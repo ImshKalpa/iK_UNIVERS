@@ -1251,6 +1251,95 @@ footer strong{
     }
 }
 
+
+/* =====================================================
+   iK UNIVERS SEARCH
+===================================================== */
+.search-area{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    position:relative;
+}
+.search-toggle{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:14px;
+    color:#eafaff;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.18);
+    cursor:pointer;
+    transition:.3s;
+}
+.search-toggle:hover{
+    color:#00ddff;
+    background:rgba(0,220,255,.12);
+    border-color:rgba(0,220,255,.55);
+    box-shadow:0 0 22px rgba(0,220,255,.15);
+}
+.search-toggle svg{width:19px;height:19px;stroke:currentColor}
+.search-panel{
+    position:absolute;
+    top:55px;
+    right:0;
+    width:min(370px, calc(100vw - 36px));
+    padding:13px;
+    display:none;
+    gap:9px;
+    align-items:center;
+    border-radius:18px;
+    background:rgba(12,16,29,.94);
+    border:1px solid rgba(255,255,255,.2);
+    box-shadow:0 22px 60px rgba(0,0,0,.5);
+    backdrop-filter:blur(25px) saturate(170%);
+    -webkit-backdrop-filter:blur(25px) saturate(170%);
+}
+.search-panel.open{display:flex;animation:servicesEnter .22s ease both}
+.search-panel input{
+    min-width:0;
+    flex:1;
+    padding:12px 13px;
+    color:#fff;
+    outline:none;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.17);
+    background:rgba(255,255,255,.07);
+    font-size:14px;
+}
+.search-panel input::placeholder{color:#9297a6}
+.search-submit{
+    flex:0 0 auto;
+    padding:12px 14px;
+    color:#fff;
+    font-size:12px;
+    font-weight:800;
+    border:1px solid rgba(0,220,255,.45);
+    border-radius:12px;
+    background:linear-gradient(135deg,rgba(0,220,255,.2),rgba(130,50,255,.2));
+    cursor:pointer;
+}
+.search-hint{
+    position:absolute;
+    right:0;
+    top:111px;
+    width:min(370px, calc(100vw - 36px));
+    color:#9297a6;
+    font-size:10px;
+    line-height:1.5;
+    text-align:right;
+    display:none;
+}
+.search-panel.open + .search-hint{display:block}
+@media(max-width:600px){
+    .search-area{gap:4px}
+    .search-toggle{width:36px;height:36px;border-radius:12px}
+    .search-panel{top:48px}
+    .search-hint{top:104px}
+}
+
 </style>
 </head>
 
@@ -1310,6 +1399,26 @@ footer strong{
         </a>
 
     </nav>
+
+    <div class="search-area">
+        <button class="search-toggle" type="button"
+                id="searchToggle" aria-label="Open iK UNIVERS search"
+                aria-expanded="false" title="Search all iK platforms">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="m20 20-4-4"></path>
+            </svg>
+        </button>
+
+        <form class="search-panel" id="siteSearchForm" role="search">
+            <input id="siteSearchInput" type="search"
+                   placeholder="Search across iK platforms..."
+                   aria-label="Search across iK platforms" autocomplete="off">
+            <button class="search-submit" type="submit">SEARCH</button>
+        </form>
+        <div class="search-hint">Searches Google-indexed pages from iK Official, iK Video &amp; iK Server.</div>
+    </div>
 
 </header>
 
@@ -1782,6 +1891,48 @@ if(window.location.hash==='#services-page'){
     showServicesPage();
 
 }
+
+
+// iK UNIVERS: search pages indexed by Google across all three linked platforms.
+// Google site: operators let one search cover all three GitHub Pages websites.
+(function setupIKUniversalSearch(){
+    const toggle = document.getElementById('searchToggle');
+    const panel = document.getElementById('siteSearchForm');
+    const input = document.getElementById('siteSearchInput');
+
+    if(!toggle || !panel || !input) return;
+
+    toggle.addEventListener('click', function(){
+        const isOpen = panel.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', String(isOpen));
+        if(isOpen) input.focus();
+    });
+
+    panel.addEventListener('submit', function(event){
+        event.preventDefault();
+        const term = input.value.trim();
+        if(!term){
+            input.focus();
+            return;
+        }
+
+        const query = term +
+            ' (site:imshkalpa.github.io/iK_Official OR ' +
+            'site:imshkalpa.github.io/iK_Video OR ' +
+            'site:imshkalpa.github.io/iK_Server)';
+
+        window.open('https://www.google.com/search?q=' +
+                    encodeURIComponent(query), '_blank', 'noopener');
+    });
+
+    document.addEventListener('keydown', function(event){
+        if(event.key === 'Escape' && panel.classList.contains('open')){
+            panel.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.focus();
+        }
+    });
+})();
 
 </script>
 
